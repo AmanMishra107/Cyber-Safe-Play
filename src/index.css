@@ -72,10 +72,6 @@ All colors MUST be HSL for proper theme support.
     @apply border-border;
   }
 
-  html {
-    @apply dark;
-  }
-
   body {
     @apply bg-background text-foreground font-sans;
     background: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 25% 12%));
@@ -110,15 +106,5 @@ All colors MUST be HSL for proper theme support.
   
   .game-card:hover {
     box-shadow: var(--glow-cyan), var(--glow-green);
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
   }
 }
