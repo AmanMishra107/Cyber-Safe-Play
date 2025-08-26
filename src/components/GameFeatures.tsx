@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { 
   Search, 
   Key, 
@@ -60,6 +61,16 @@ const games = [
 ];
 
 const GameFeatures = () => {
+  const navigate = useNavigate();
+
+  const gameRoutes = [
+    "/games/phishing-detective",
+    "/games/password-fortress", 
+    "/games/wifi-defender",
+    "/games/spot-the-hacker",
+    "/games/cyber-escape-room",
+    "/games/cyber-hygiene-runner"
+  ];
   return (
     <section id="games" className="py-20 px-4">
       <div className="container mx-auto">
@@ -109,7 +120,10 @@ const GameFeatures = () => {
                 </div>
 
                 {/* Play Button */}
-                <Button className="w-full cyber-button group-hover:scale-105">
+                <Button 
+                  className="w-full cyber-button group-hover:scale-105"
+                  onClick={() => navigate(gameRoutes[index])}
+                >
                   Play Now
                 </Button>
               </div>
