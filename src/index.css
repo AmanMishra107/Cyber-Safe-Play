@@ -7,104 +7,207 @@ All colors MUST be HSL for proper theme support.
 */
 
 @layer base {
-  :root {
-    /* Cyberpunk Dark Theme */
-    --background: 220 25% 8%;
-    --foreground: 180 100% 95%;
-
-    --card: 220 25% 12%;
-    --card-foreground: 180 100% 95%;
-
-    --popover: 220 25% 10%;
-    --popover-foreground: 180 100% 95%;
-
-    /* Cyber Primary - Neon Cyan */
-    --primary: 180 100% 50%;
-    --primary-foreground: 220 25% 8%;
-
-    /* Cyber Secondary - Electric Green */
-    --secondary: 150 100% 55%;
-    --secondary-foreground: 220 25% 8%;
-
-    /* Cyber Accent - Deep Purple */
-    --accent: 270 70% 35%;
-    --accent-foreground: 180 100% 95%;
-
-    --muted: 220 25% 15%;
-    --muted-foreground: 180 20% 70%;
-
-    --destructive: 0 75% 60%;
-    --destructive-foreground: 180 100% 95%;
-
-    --border: 220 25% 20%;
-    --input: 220 25% 15%;
-    --ring: 180 100% 50%;
-
-    --radius: 0.75rem;
-
-    /* Cyber Gradients */
-    --gradient-cyber: linear-gradient(135deg, hsl(180 100% 50%), hsl(150 100% 55%));
-    --gradient-purple: linear-gradient(135deg, hsl(270 70% 35%), hsl(290 70% 45%));
-    --gradient-dark: linear-gradient(135deg, hsl(220 25% 12%), hsl(220 25% 8%));
-    
-    /* Neon Glows */
-    --glow-cyan: 0 0 20px hsl(180 100% 50% / 0.5);
-    --glow-green: 0 0 20px hsl(150 100% 55% / 0.5);
-    --glow-purple: 0 0 20px hsl(270 70% 35% / 0.5);
-
-    /* Glass Effects */
-    --glass-bg: hsl(220 25% 12% / 0.8);
-    --glass-border: hsl(180 100% 50% / 0.2);
-
-    --sidebar-background: 220 25% 10%;
-    --sidebar-foreground: 180 100% 95%;
-    --sidebar-primary: 180 100% 50%;
-    --sidebar-primary-foreground: 220 25% 8%;
-    --sidebar-accent: 220 25% 15%;
-    --sidebar-accent-foreground: 180 100% 95%;
-    --sidebar-border: 220 25% 20%;
-    --sidebar-ring: 180 100% 50%;
-  }
+     :root {
+        /* Cyberpunk Dark Theme */
+        --background: 220 25% 8%;
+        --foreground: 180 100% 95%;
+        --card: 220 25% 12%;
+        --card-foreground: 180 100% 95%;
+        --popover: 220 25% 10%;
+        --popover-foreground: 180 100% 95%;
+        /* Cyber Primary - Neon Cyan */
+        --primary: 180 100% 50%;
+        --primary-foreground: 220 25% 8%;
+        /* Cyber Secondary - Electric Green */
+        --secondary: 150 100% 55%;
+        --secondary-foreground: 220 25% 8%;
+        /* Cyber Accent - Deep Purple */
+        --accent: 270 70% 35%;
+        --accent-foreground: 180 100% 95%;
+        --muted: 220 25% 15%;
+        --muted-foreground: 180 20% 70%;
+        --destructive: 0 75% 60%;
+        --destructive-foreground: 180 100% 95%;
+        --border: 220 25% 20%;
+        --input: 220 25% 15%;
+        --ring: 180 100% 50%;
+        --radius: 0.75rem;
+        /* Cyber Gradients */
+        --gradient-cyber: linear-gradient(135deg, hsl(180 100% 50%), hsl(150 100% 55%));
+        --gradient-purple: linear-gradient(135deg, hsl(270 70% 35%), hsl(290 70% 45%));
+        --gradient-dark: linear-gradient(135deg, hsl(220 25% 12%), hsl(220 25% 8%));
+        /* Neon Glows */
+        --glow-cyan: 0 0 20px hsl(180 100% 50% / 0.5);
+        --glow-green: 0 0 20px hsl(150 100% 55% / 0.5);
+        --glow-purple: 0 0 20px hsl(270 70% 35% / 0.5);
+        /* Glass Effects */
+        --glass-bg: hsl(220 25% 12% / 0.8);
+        --glass-border: hsl(180 100% 50% / 0.2);
+        --sidebar-background: 220 25% 10%;
+        --sidebar-foreground: 180 100% 95%;
+        --sidebar-primary: 180 100% 50%;
+        --sidebar-primary-foreground: 220 25% 8%;
+        --sidebar-accent: 220 25% 15%;
+        --sidebar-accent-foreground: 180 100% 95%;
+        --sidebar-border: 220 25% 20%;
+        --sidebar-ring: 180 100% 50%;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground font-sans;
-    background: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 25% 12%));
-    min-height: 100vh;
-  }
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground font-sans;
+        background: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 25% 12%));
+        min-height: 100vh;
+    }
+    /* Custom Cyberpunk Scrollbar */
+     ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+     ::-webkit-scrollbar-track {
+        background: hsl(220 25% 12%);
+        border-radius: 10px;
+        border: 1px solid hsl(220 25% 20%);
+    }
+     ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, hsl(180 100% 50%), hsl(150 100% 55%));
+        border-radius: 10px;
+        border: 2px solid hsl(220 25% 12%);
+        box-shadow: 0 0 10px hsl(180 100% 50% / 0.3);
+    }
+     ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, hsl(180 100% 60%), hsl(150 100% 65%));
+        box-shadow: 0 0 15px hsl(180 100% 50% / 0.5);
+    }
+     ::-webkit-scrollbar-corner {
+        background: hsl(220 25% 12%);
+    }
+    /* Firefox Scrollbar */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(180 100% 50%) hsl(220 25% 12%);
+    }
 }
 
 @layer components {
-  .glass-card {
-    @apply bg-card/80 backdrop-blur-lg border border-primary/20 rounded-xl;
-    box-shadow: var(--glow-cyan);
-  }
-  
-  .cyber-button {
-    @apply relative overflow-hidden bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-3 px-6 rounded-lg transition-all duration-300;
-    box-shadow: var(--glow-cyan);
-  }
-  
-  .cyber-button:hover {
-    @apply scale-105;
-    box-shadow: var(--glow-cyan), var(--glow-green);
-  }
-  
-  .neon-text {
-    @apply text-primary font-bold;
-    text-shadow: var(--glow-cyan);
-  }
-  
-  .game-card {
-    @apply glass-card p-6 hover:scale-105 transition-all duration-300 cursor-pointer;
-  }
-  
-  .game-card:hover {
-    box-shadow: var(--glow-cyan), var(--glow-green);
-  }
+    .glass-card {
+        @apply bg-card/80 backdrop-blur-lg border border-primary/20 rounded-xl;
+        box-shadow: var(--glow-cyan);
+    }
+    .cyber-button {
+        @apply relative overflow-hidden bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-3 px-6 rounded-lg transition-all duration-300;
+        box-shadow: var(--glow-cyan);
+    }
+    .cyber-button:hover {
+        @apply scale-105;
+        box-shadow: var(--glow-cyan), var(--glow-green);
+    }
+    .neon-text {
+        @apply text-primary font-bold;
+        text-shadow: var(--glow-cyan);
+    }
+    /* FIXED: NO space between hover: and scale-105 */
+    .game-card {
+        @apply glass-card p-6 transition-all duration-300 cursor-pointer;
+    }
+    .game-card:hover {
+        box-shadow: var(--glow-cyan), var(--glow-green);
+    }
+    /* Scrollbar utility classes */
+    .scrollbar-cyber {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(180 100% 50%) hsl(220 25% 12%);
+    }
+    .scrollbar-cyber::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .scrollbar-cyber::-webkit-scrollbar-track {
+        background: hsl(220 25% 15%);
+        border-radius: 6px;
+    }
+    .scrollbar-cyber::-webkit-scrollbar-thumb {
+        background: linear-gradient(45deg, hsl(180 100% 50%), hsl(150 100% 55%));
+        border-radius: 6px;
+        box-shadow: 0 0 8px hsl(180 100% 50% / 0.4);
+    }
+    .scrollbar-cyber::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, hsl(180 100% 60%), hsl(150 100% 65%));
+        box-shadow: 0 0 12px hsl(180 100% 50% / 0.6);
+    }
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(180 100% 50% / 0.5) transparent;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: hsl(180 100% 50% / 0.6);
+        border-radius: 3px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: hsl(180 100% 50% / 0.8);
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@layer utilities {
+    .animate-cyber-float {
+        animation: cyber-float 6s ease-in-out infinite;
+    }
+    .animate-neon-flicker {
+        animation: neon-flicker 2s ease-in-out infinite alternate;
+    }
+    .animate-glow-pulse {
+        animation: glow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes cyber-float {
+        0%,
+        100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-10px) rotate(2deg);
+        }
+    }
+    @keyframes neon-flicker {
+        0%,
+        100% {
+            text-shadow: 0 0 5px hsl(180 100% 50%), 0 0 10px hsl(180 100% 50%), 0 0 15px hsl(180 100% 50%);
+        }
+        50% {
+            text-shadow: 0 0 2px hsl(180 100% 50%), 0 0 5px hsl(180 100% 50%), 0 0 8px hsl(180 100% 50%);
+        }
+    }
+    @keyframes glow-pulse {
+        0%,
+        100% {
+            box-shadow: 0 0 5px hsl(180 100% 50% / 0.5);
+        }
+        50% {
+            box-shadow: 0 0 20px hsl(180 100% 50% / 0.8), 0 0 30px hsl(150 100% 55% / 0.4);
+        }
+    }
+}
+
+
+/* Universal smooth scrolling for all elements */
+
+html {
+    scroll-behavior: smooth;
 }

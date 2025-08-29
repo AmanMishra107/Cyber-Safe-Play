@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
-import GameLayout from "@/components/GameLayout";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Play, Pause, RotateCcw, Zap, Heart, Shield } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState, useEffect, useCallback } from 'react';
+import GameLayout from '@/components/GameLayout';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Play, Pause, RotateCcw, Zap, Heart, Shield } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface GameObject {
   id: number;
@@ -30,7 +30,7 @@ const goodPractices = [
   { icon: '🔐', text: '2FA Token', points: 25 },
   { icon: '💾', text: 'Data Backup', points: 15 },
   { icon: '🔍', text: 'Security Audit', points: 30 },
-  { icon: '📱', text: 'Secure App', points: 10 }
+  { icon: '📱', text: 'Secure App', points: 10 },
 ];
 
 const badThreats = [
@@ -39,18 +39,18 @@ const badThreats = [
   { icon: '🔓', text: 'Weak Password', points: -10 },
   { icon: '⚠️', text: 'Security Warning', points: -25 },
   { icon: '🎯', text: 'Social Engineering', points: -30 },
-  { icon: '💳', text: 'Credit Card Scam', points: -20 },
+  { icon: '💳', text: 'Credit Scam', points: -20 },
   { icon: '🕳️', text: 'Security Hole', points: -15 },
-  { icon: '🎪', text: 'Fake Website', points: -10 }
+  { icon: '🎪', text: 'Fake Website', points: -10 },
 ];
 
-const powerUps = [
-  { icon: '🛡️', type: 'shield', points: 0 },
-  { icon: '⚡', type: 'double', points: 0 },
-  { icon: '🐌', type: 'slow', points: 0 }
+const powerUpsList = [
+  { icon: '🛡️', type: 'shield' },
+  { icon: '⚡', type: 'double' },
+  { icon: '🐌', type: 'slow' },
 ];
 
-const CyberHygieneRunner = () => {
+const CyberHygieneRunner: React.FC = () => {
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [gameRunning, setGameRunning] = useState(false);
@@ -59,11 +59,7 @@ const CyberHygieneRunner = () => {
   const [objects, setObjects] = useState<GameObject[]>([]);
   const [gameSpeed, setGameSpeed] = useState(2);
   const [distance, setDistance] = useState(0);
-  const [powerUps, setPowerUps] = useState<PowerUp>({
-    type: 'shield',
-    duration: 0,
-    active: false
-  });
+  const [powerUps, setPowerUps] = useState<PowerUp>({ type: 'shield', duration: 0, active: false });
   const [keys, setKeys] = useState({ up: false, down: false });
   const [objectId, setObjectId] = useState(1);
 
@@ -74,30 +70,26 @@ const CyberHygieneRunner = () => {
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        setKeys(prev => ({ ...prev, up: true }));
-      }
-      if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        setKeys(prev => ({ ...prev, down: true }));
-      }
-      if (e.key === ' ') {
+      if (['ArrowUp', 'w', 'W'].includes(e.key)) {
+        setKeys(k => ({ ...k, up: true }));
+      } else if (['ArrowDown', 's', 'S'].includes(e.key)) {
+        setKeys(k => ({ ...k, down: true }));
+      } else if (e.key === ' ') {
         e.preventDefault();
         toggleGame();
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        setKeys(prev => ({ ...prev, up: false }));
-      }
-      if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        setKeys(prev => ({ ...prev, down: false }));
+      if (['ArrowUp', 'w', 'W'].includes(e.key)) {
+        setKeys(k => ({ ...k, up: false }));
+      } else if (['ArrowDown', 's', 'S'].includes(e.key)) {
+        setKeys(k => ({ ...k, down: false }));
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
@@ -107,17 +99,14 @@ const CyberHygieneRunner = () => {
   // Player movement
   useEffect(() => {
     if (!gameRunning) return;
-
-    const movePlayer = () => {
-      setPlayerY(prev => {
-        let newY = prev;
-        if (keys.up) newY -= 4;
-        if (keys.down) newY += 4;
-        return Math.max(0, Math.min(GAME_HEIGHT - PLAYER_SIZE, newY));
+    const interval = setInterval(() => {
+      setPlayerY(pos => {
+        let newPos = pos;
+        if (keys.up) newPos -= 4;
+        if (keys.down) newPos += 4;
+        return Math.max(0, Math.min(newPos, GAME_HEIGHT - PLAYER_SIZE));
       });
-    };
-
-    const interval = setInterval(movePlayer, 16);
+    }, 16);
     return () => clearInterval(interval);
   }, [keys, gameRunning]);
 
@@ -127,114 +116,102 @@ const CyberHygieneRunner = () => {
     let type: 'good' | 'bad' | 'power';
     let item;
 
-    if (rand < 0.1) { // 10% power-ups
+    if (rand < 0.1) {
       type = 'power';
-      item = powerUps[Math.floor(Math.random() * powerUps.length)];
-    } else if (rand < 0.65) { // 55% good practices
+      item = powerUpsList[Math.floor(Math.random() * powerUpsList.length)];
+    } else if (rand < 0.65) {
       type = 'good';
       item = goodPractices[Math.floor(Math.random() * goodPractices.length)];
-    } else { // 35% threats
+    } else {
       type = 'bad';
       item = badThreats[Math.floor(Math.random() * badThreats.length)];
     }
 
-    const newObject: GameObject = {
+    const newObj: GameObject = {
       id: objectId,
       x: 800,
       y: Math.random() * (GAME_HEIGHT - OBJECT_SIZE),
       type,
       icon: item.icon,
-      points: item.points
+      points: item.points,
     };
 
-    setObjects(prev => [...prev, newObject]);
-    setObjectId(prev => prev + 1);
+    setObjects(objs => [...objs, newObj]);
+    setObjectId(id => id + 1);
   }, [objectId]);
 
   // Game loop
   useEffect(() => {
     if (!gameRunning || gameOver) return;
-
-    const gameLoop = setInterval(() => {
-      // Move objects
-      setObjects(prev => prev.map(obj => ({
-        ...obj,
-        x: obj.x - gameSpeed
-      })).filter(obj => obj.x > -OBJECT_SIZE));
-
-      // Spawn new objects
-      if (Math.random() < 0.02 + (gameSpeed * 0.003)) {
-        spawnObject();
-      }
-
-      // Increase game speed and distance
-      setGameSpeed(prev => Math.min(8, prev + 0.001));
-      setDistance(prev => prev + 1);
-
-      // Update power-ups
-      setPowerUps(prev => ({
-        ...prev,
-        duration: Math.max(0, prev.duration - 16),
-        active: prev.duration > 0
+    const interval = setInterval(() => {
+      setObjects(objs =>
+        objs.map(obj => ({ ...obj, x: obj.x - gameSpeed }))
+          .filter(obj => obj.x > -OBJECT_SIZE)
+      );
+      if (Math.random() < 0.02 + gameSpeed * 0.003) spawnObject();
+      setGameSpeed(speed => Math.min(8, speed + 0.002));
+      setDistance(dist => dist + 1);
+      setPowerUps(p => ({
+        ...p,
+        duration: Math.max(0, p.duration - 16),
+        active: p.duration > 0
       }));
-
     }, 16);
-
-    return () => clearInterval(gameLoop);
+    return () => clearInterval(interval);
   }, [gameRunning, gameOver, gameSpeed, spawnObject]);
 
   // Collision detection
   useEffect(() => {
     if (!gameRunning) return;
-
     objects.forEach(obj => {
       if (obj.collected) return;
 
-      const playerLeft = 50;
-      const playerRight = playerLeft + PLAYER_SIZE;
-      const playerTop = playerY;
-      const playerBottom = playerTop + PLAYER_SIZE;
+      const playerRect = {
+        left: 50,
+        right: 90,
+        top: playerY,
+        bottom: playerY + PLAYER_SIZE
+      };
+      const objRect = {
+        left: obj.x,
+        right: obj.x + OBJECT_SIZE,
+        top: obj.y,
+        bottom: obj.y + OBJECT_SIZE
+      };
 
-      const objLeft = obj.x;
-      const objRight = obj.x + OBJECT_SIZE;
-      const objTop = obj.y;
-      const objBottom = obj.y + OBJECT_SIZE;
+      const overlap = !(
+        playerRect.right < objRect.left ||
+        playerRect.left > objRect.right ||
+        playerRect.bottom < objRect.top ||
+        playerRect.top > objRect.bottom
+      );
 
-      // Check collision
-      if (playerRight > objLeft && playerLeft < objRight && 
-          playerBottom > objTop && playerTop < objBottom) {
-        
-        // Mark as collected
-        setObjects(prev => prev.map(o => 
-          o.id === obj.id ? { ...o, collected: true } : o
-        ));
+      if (overlap) {
+        setObjects(objs =>
+          objs.map(o => o.id === obj.id ? { ...o, collected: true } : o)
+        );
 
         if (obj.type === 'good') {
-          const points = obj.points * (powerUps.active && powerUps.type === 'double' ? 2 : 1);
-          setScore(prev => prev + points);
-          toast.success(`+${points} Cyber Hygiene!`);
+          const pts = powerUps.active && powerUps.type === 'double' ? obj.points * 2 : obj.points;
+          setScore(s => s + pts);
+          toast.success(`+${pts} Cyber Hygiene!`);
         } else if (obj.type === 'bad') {
           if (powerUps.active && powerUps.type === 'shield') {
             toast.info("Shield protected you!");
           } else {
-            setScore(prev => Math.max(0, prev + obj.points));
-            setLives(prev => prev - 1);
+            setScore(s => Math.max(0, s + obj.points));
+            setLives(l => l - 1);
             toast.error(`${obj.points} points! Watch out!`);
           }
-        } else if (obj.type === 'power') {
-          const powerType = obj.icon === '🛡️' ? 'shield' : obj.icon === '⚡' ? 'double' : 'slow';
-          setPowerUps({
-            type: powerType,
-            duration: 5000,
-            active: true
-          });
-          toast.success(`Power-up activated: ${powerType}!`);
+        } else {
+          const pType = obj.icon === '🛡️' ? 'shield' : obj.icon === '⚡' ? 'double' : 'slow';
+          setPowerUps({ type: pType, duration: 5000, active: true });
+          toast.success(`Power-up activated: ${pType}!`);
         }
       }
     });
   }, [objects, playerY, gameRunning, powerUps]);
 
-  // Game over check
   useEffect(() => {
     if (lives <= 0) {
       setGameOver(true);
@@ -247,7 +224,7 @@ const CyberHygieneRunner = () => {
     if (gameOver) {
       restartGame();
     } else {
-      setGameRunning(!gameRunning);
+      setGameRunning(gr => !gr);
     }
   };
 
@@ -275,43 +252,42 @@ const CyberHygieneRunner = () => {
             <div className="text-xs text-muted-foreground">Lives</div>
           </Card>
           <Card className="glass-card p-4 text-center">
-            <div className="text-xl font-cyber font-bold text-primary">{Math.floor(distance / 60)}m</div>
+            <div className="text-xl font-cyber font-bold text-primary">
+              {Math.floor(distance / 60)}m
+            </div>
             <div className="text-xs text-muted-foreground">Distance</div>
           </Card>
           <Card className="glass-card p-4 text-center">
             <Zap className="h-6 w-6 text-accent mx-auto mb-2" />
-            <div className="text-xl font-cyber font-bold text-accent">{gameSpeed.toFixed(1)}x</div>
+            <div className="text-xl font-cyber font-bold text-accent">
+              {gameSpeed.toFixed(1)}x
+            </div>
             <div className="text-xs text-muted-foreground">Speed</div>
           </Card>
           <Card className="glass-card p-4 text-center">
-            {powerUps.active && (
+            {powerUps.active ? (
               <div className="flex items-center justify-center space-x-1">
-                <Shield className="h-4 w-4 text-secondary" />
+                <Shield className="h-5 w-5 text-secondary" />
                 <span className="text-sm font-cyber text-secondary">
                   {Math.ceil(powerUps.duration / 1000)}s
                 </span>
               </div>
-            )}
-            {!powerUps.active && (
-              <div className="text-sm text-muted-foreground">No Power-up</div>
+            ) : (
+              <div className="text-xs text-muted-foreground">No Power-up</div>
             )}
           </Card>
         </div>
 
         {/* Game Area */}
         <Card className="glass-card p-4">
-          <div 
-            className="relative bg-gradient-to-r from-card/30 to-card/50 rounded-lg overflow-hidden border border-primary/20"
-            style={{ height: GAME_HEIGHT }}
-          >
-            {/* Background grid effect */}
+          <div className="relative bg-gradient-to-r from-card/30 to-card/50 rounded-lg overflow-hidden border border-primary/20"
+            style={{ height: GAME_HEIGHT }}>
+
+            {/* Background grid */}
             <div className="absolute inset-0 opacity-20">
-              {Array.from({ length: 20 }, (_, i) => (
-                <div
-                  key={i}
-                  className="absolute border-l border-primary/20"
-                  style={{ left: `${i * 5}%`, height: '100%' }}
-                />
+              {[...Array(20)].map((_, i) => (
+                <div key={i} className="absolute border-l border-primary/20 h-full"
+                  style={{ left: `${i * 5}%` }} />
               ))}
             </div>
 
@@ -323,7 +299,8 @@ const CyberHygieneRunner = () => {
                 top: playerY,
                 width: PLAYER_SIZE,
                 height: PLAYER_SIZE,
-                boxShadow: '0 0 20px hsl(var(--primary) / 0.5)'
+                boxShadow: '0 0 20px hsl(var(--primary) / 0.5)',
+                userSelect: 'none'
               }}
             >
               🏃
@@ -333,19 +310,23 @@ const CyberHygieneRunner = () => {
             {objects.map(obj => (
               <div
                 key={obj.id}
-                className={`absolute rounded-lg flex items-center justify-center text-lg border-2 transition-all ${
-                  obj.type === 'good' ? 'bg-secondary/80 border-secondary' :
-                  obj.type === 'bad' ? 'bg-destructive/80 border-destructive' :
-                  'bg-accent/80 border-accent'
-                } ${obj.collected ? 'opacity-0' : 'opacity-100'}`}
+                className={`absolute rounded-lg flex items-center justify-center text-lg border-2 transition-all ${obj.type === 'good'
+                    ? 'bg-secondary/80 border-secondary'
+                    : obj.type === 'bad'
+                      ? 'bg-destructive/80 border-destructive'
+                      : 'bg-accent/80 border-accent'
+                  } ${obj.collected ? 'opacity-0' : 'opacity-100'}`}
                 style={{
                   left: obj.x,
                   top: obj.y,
                   width: OBJECT_SIZE,
                   height: OBJECT_SIZE,
-                  boxShadow: obj.type === 'good' ? '0 0 15px hsl(var(--secondary) / 0.5)' :
-                           obj.type === 'bad' ? '0 0 15px hsl(var(--destructive) / 0.5)' :
-                           '0 0 15px hsl(var(--accent) / 0.5)'
+                  boxShadow: obj.type === 'good'
+                    ? '0 0 15px hsl(var(--secondary) / 0.5)'
+                    : obj.type === 'bad'
+                      ? '0 0 15px hsl(var(--destructive) / 0.5)'
+                      : '0 0 15px hsl(var(--accent) / 0.5)',
+                  userSelect: 'none'
                 }}
               >
                 {obj.icon}
@@ -354,7 +335,7 @@ const CyberHygieneRunner = () => {
 
             {/* Game Over / Start Screen */}
             {(!gameRunning || gameOver) && (
-              <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+              <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
                 <div className="text-center space-y-4">
                   {gameOver ? (
                     <>
@@ -368,7 +349,7 @@ const CyberHygieneRunner = () => {
                       <h2 className="text-3xl font-cyber font-bold text-primary">Cyber Hygiene Runner</h2>
                       <p className="text-muted-foreground">Collect good practices, avoid threats!</p>
                       <div className="text-sm text-muted-foreground space-y-1">
-                        <p>Use ↑/↓ or W/S to move</p>
+                        <p>Use ↑/↓ arrows, W/S keys, or touch controls to move</p>
                         <p>Spacebar to pause/resume</p>
                       </div>
                     </>
@@ -383,6 +364,40 @@ const CyberHygieneRunner = () => {
                 </div>
               </div>
             )}
+
+            {/* Mobile Touch Controls */}
+            <div className="absolute bottom-4 left-4 flex flex-col space-y-2 md:hidden">
+              <button
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  setKeys(k => ({ ...k, up: true }));
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  setKeys(k => ({ ...k, up: false }));
+                }}
+                className="w-12 h-12 bg-primary/80 hover:bg-primary rounded-full text-white text-xl flex items-center justify-center border-2 border-primary shadow-lg touch-manipulation"
+                style={{ userSelect: 'none' }}
+                aria-label="Move Up"
+              >
+                ↑
+              </button>
+              <button
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  setKeys(k => ({ ...k, down: true }));
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  setKeys(k => ({ ...k, down: false }));
+                }}
+                className="w-12 h-12 bg-primary/80 hover:bg-primary rounded-full text-white text-xl flex items-center justify-center border-2 border-primary shadow-lg touch-manipulation"
+                style={{ userSelect: 'none' }}
+                aria-label="Move Down"
+              >
+                ↓
+              </button>
+            </div>
 
             {/* Pause indicator */}
             {!gameRunning && !gameOver && distance > 0 && (

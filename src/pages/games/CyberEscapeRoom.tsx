@@ -98,6 +98,26 @@ const puzzles: Puzzle[] = [
     difficulty: 2,
     category: 'encryption',
     completed: false
+  },
+  {
+    id: 9,
+    title: "SQL Injection Defense",
+    description: "A login form is vulnerable to SQL injection. The attacker enters: admin' OR '1'='1' -- as username. What SQL defense technique should be used to prevent this attack?",
+    hint: "This technique uses placeholders for user input values",
+    answer: "prepared statements",
+    difficulty: 4,
+    category: 'network',
+    completed: false
+  },
+  {
+    id: 10,
+    title: "Advanced Cryptanalysis",
+    description: "You intercept this Vigenère cipher: 'RIJVS UYVJN RXJIY' with the key 'KEY'. What is the original message?",
+    hint: "In Vigenère cipher, subtract the key letters from the cipher letters (mod 26)",
+    answer: "HELLO WORLD AGAIN",
+    difficulty: 5,
+    category: 'encryption',
+    completed: false
   }
 ];
 
@@ -126,11 +146,12 @@ const CyberEscapeRoom = () => {
   }, [timeLeft, gameOver, escaped]);
 
   useEffect(() => {
-    if (completedPuzzles === puzzles.length) {
+    if (completedPuzzles === puzzles.length && completedPuzzles > 0) {
       setEscaped(true);
-      const timeBonus = timeLeft * 10;
-      const hintPenalty = hintsUsed * 50;
-      const finalScore = score + timeBonus - hintPenalty;
+      // Calculate final score with reasonable bonuses
+      const timeBonus = Math.floor(timeLeft / 60) * 5; // 5 points per minute remaining
+      const hintPenalty = hintsUsed * 2; // 2 points penalty per hint
+      const finalScore = Math.max(0, score + timeBonus - hintPenalty);
       setScore(finalScore);
       toast.success(`🎉 Escaped! Final Score: ${finalScore}`);
     }
@@ -141,10 +162,12 @@ const CyberEscapeRoom = () => {
     const correctAnswer = currentPuzzle.answer.toLowerCase().trim();
 
     if (normalizedAnswer === correctAnswer) {
-      const points = currentPuzzle.difficulty * 100 + (showHint ? 0 : 50);
+      const basePoints = 10; // Fixed 10 points per puzzle
+      const bonusPoints = showHint ? 0 : 2; // Small bonus for not using hint
+      const points = basePoints + bonusPoints;
       setScore(prev => prev + points);
-      
-      setPuzzleStates(prev => prev.map(p => 
+
+      setPuzzleStates(prev => prev.map(p =>
         p.id === currentPuzzle.id ? { ...p, completed: true } : p
       ));
 
@@ -153,10 +176,10 @@ const CyberEscapeRoom = () => {
       setShowHint(false);
 
       // Move to next unsolved puzzle
-      const nextIndex = puzzleStates.findIndex((p, idx) => 
+      const nextIndex = puzzleStates.findIndex((p, idx) =>
         idx > currentPuzzleIndex && !p.completed
       );
-      
+
       if (nextIndex !== -1) {
         setCurrentPuzzleIndex(nextIndex);
       } else {
@@ -175,7 +198,7 @@ const CyberEscapeRoom = () => {
     if (!showHint) {
       setShowHint(true);
       setHintsUsed(prev => prev + 1);
-      toast.info("Hint revealed! (-50 points penalty)");
+      toast.info("Hint revealed! (No bonus points for this puzzle)");
     }
   };
 
@@ -205,6 +228,13 @@ const CyberEscapeRoom = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Calculate potential maximum score for display
+  const getMaxPossibleScore = () => {
+    const maxPuzzlePoints = puzzles.length * 12; // 10 base + 2 bonus per puzzle
+    const maxTimeBonus = Math.floor(600 / 60) * 5; // 10 minutes * 5 points per minute
+    return maxPuzzlePoints + maxTimeBonus; // 120 + 50 = 170 max
+  };
+
   if (gameOver) {
     return (
       <GameLayout title="Cyber Escape Room" score={score} onRestart={restartGame}>
@@ -214,9 +244,12 @@ const CyberEscapeRoom = () => {
             <h2 className="text-2xl font-cyber font-bold text-destructive mb-4">
               Trapped in Cyberspace!
             </h2>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground mb-4">
               Time ran out! You solved {completedPuzzles} out of {puzzles.length} puzzles.
             </p>
+            <div className="text-lg font-bold text-primary mb-4">
+              Final Score: {score} / {getMaxPossibleScore()}
+            </div>
             <Button onClick={restartGame} className="cyber-button w-full">
               Try Again
             </Button>
@@ -240,11 +273,27 @@ const CyberEscapeRoom = () => {
                 Escape Time: <span className="text-primary font-bold">{formatTime(600 - timeLeft)}</span>
               </p>
               <p className="text-muted-foreground">
-                Final Score: <span className="text-secondary font-bold">{score}</span>
+                Puzzles Solved: <span className="text-secondary font-bold">{completedPuzzles}/{puzzles.length}</span>
               </p>
               <p className="text-muted-foreground">
-                Hints Used: <span className="text-accent font-bold">{hintsUsed}</span>
+                Base Score: <span className="text-secondary font-bold">{score - Math.floor(timeLeft / 60) * 5 + hintsUsed * 2}</span>
               </p>
+              <p className="text-muted-foreground">
+                Time Bonus: <span className="text-accent font-bold">+{Math.floor(timeLeft / 60) * 5}</span>
+              </p>
+              {hintsUsed > 0 && (
+                <p className="text-muted-foreground">
+                  Hint Penalty: <span className="text-destructive font-bold">-{hintsUsed * 2}</span>
+                </p>
+              )}
+              <div className="border-t pt-2 mt-4">
+                <p className="text-lg font-bold text-primary">
+                  Final Score: {score} / {getMaxPossibleScore()}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {Math.round((score / getMaxPossibleScore()) * 100)}% Perfect Score
+                </p>
+              </div>
             </div>
             <Button onClick={restartGame} className="cyber-button w-full">
               New Escape Challenge
@@ -292,13 +341,12 @@ const CyberEscapeRoom = () => {
               {puzzleStates.map((puzzle, index) => (
                 <div
                   key={puzzle.id}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    puzzle.completed 
-                      ? 'bg-secondary/20 border border-secondary/50' 
+                  className={`p-3 rounded-lg cursor-pointer transition-colors ${puzzle.completed
+                      ? 'bg-secondary/20 border border-secondary/50'
                       : index === currentPuzzleIndex
-                      ? 'bg-primary/20 border border-primary/50'
-                      : 'bg-card/50 hover:bg-card/70 border border-muted'
-                  }`}
+                        ? 'bg-primary/20 border border-primary/50'
+                        : 'bg-card/50 hover:bg-card/70 border border-muted'
+                    }`}
                   onClick={() => switchPuzzle(index)}
                 >
                   <div className="flex items-center justify-between">
@@ -332,11 +380,16 @@ const CyberEscapeRoom = () => {
                   <h2 className="text-2xl font-cyber font-bold text-primary">
                     {currentPuzzle.title}
                   </h2>
-                  <Badge variant="outline" className="capitalize">
-                    {currentPuzzle.category}
-                  </Badge>
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline" className="capitalize">
+                      {currentPuzzle.category}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      10-12 pts
+                    </Badge>
+                  </div>
                 </div>
-                
+
                 <div className="bg-card/50 rounded-lg p-4 mb-4">
                   <p className="text-foreground leading-relaxed">
                     {currentPuzzle.description}
@@ -378,7 +431,7 @@ const CyberEscapeRoom = () => {
                   >
                     Submit Answer
                   </Button>
-                  
+
                   <Button
                     onClick={useHint}
                     disabled={showHint}
@@ -386,7 +439,7 @@ const CyberEscapeRoom = () => {
                     className="border-accent/50 text-accent hover:bg-accent/10"
                   >
                     <Lightbulb className="mr-2 h-4 w-4" />
-                    {showHint ? 'Hint Used' : 'Use Hint (-50pts)'}
+                    {showHint ? 'Hint Used' : 'Use Hint (No Bonus)'}
                   </Button>
                 </div>
               </div>
