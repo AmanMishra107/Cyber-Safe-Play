@@ -127,7 +127,7 @@ Contributions are welcome! To propose changes:
 For bug reports, please include reproduction steps and your environment (OS, browser, Node version).
 
 ## License
-Distributed under the **MIT License**. See [LICENSE](#license-1) below.
+Distributed under the **MIT License**. See [LICENSE](#LICENSE) below.
 
 ## Acknowledgements
 - Thanks to open‑source maintainers of Vite, react, TypeScript, Tailwind, and the wider web community.
